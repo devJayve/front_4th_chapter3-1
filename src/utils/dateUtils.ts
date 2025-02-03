@@ -4,6 +4,8 @@ import { Event } from '../types.ts';
  * 주어진 년도와 월의 일수를 반환합니다.
  */
 export function getDaysInMonth(year: number, month: number): number {
+  // 1~12월이 아닌 경우 -1 반환
+  if (month > 12 || month < 1) return -1;
   return new Date(year, month, 0).getDate();
 }
 
@@ -55,6 +57,10 @@ export function getEventsForDay(events: Event[], date: number): Event[] {
   return events.filter((event) => new Date(event.date).getDate() === date);
 }
 
+/**
+ * 주어진 날짜의 주차 정보를 "YYYY년 M월 N주" 형식으로 반환합니다.
+ * ISO 8601 규격에 따라 1주차는 해당 년도의 첫 번째 목요일을 기준으로 합니다.
+ */
 export function formatWeek(targetDate: Date) {
   const dayOfWeek = targetDate.getDay();
   const diffToThursday = 4 - dayOfWeek;

@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 
 async function enableMocking() {
-  const {worker} = await import('./__mocks__/worker');
+  const { worker } = await import('./__mocks__/worker');
   return worker.start();
 }
 
@@ -17,4 +17,4 @@ enableMocking().then(() => {
       </ChakraProvider>
     </React.StrictMode>
   );
-})
+});
