@@ -1,5 +1,6 @@
 import { Event } from '../types';
 import { getWeekDates, isDateInRange } from './dateUtils';
+import { GetFilteredEventsParams } from './types.ts';
 
 function filterEventsByDateRange(events: Event[], start: Date, end: Date): Event[] {
   return events.filter((event) => {
@@ -30,12 +31,12 @@ function filterEventsByDateRangeAtMonth(events: Event[], currentDate: Date) {
   return filterEventsByDateRange(events, monthStart, monthEnd);
 }
 
-export function getFilteredEvents(
-  events: Event[],
-  searchTerm: string,
-  currentDate: Date,
-  view: 'week' | 'month'
-): Event[] {
+export function getFilteredEvents({
+  events,
+  searchTerm = '',
+  currentDate,
+  view,
+}: GetFilteredEventsParams): Event[] {
   const searchedEvents = searchEvents(events, searchTerm);
 
   if (view === 'week') {
