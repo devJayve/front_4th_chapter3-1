@@ -1,9 +1,10 @@
-import { expect } from 'vitest';
+import { describe, expect } from 'vitest';
 
 import { Event } from '../../types';
 import {
   fillZero,
   formatDate,
+  formatMinuteTime,
   formatMonth,
   formatWeek,
   getDaysInMonth,
@@ -402,5 +403,21 @@ describe('formatDate', () => {
   it('일이 한 자리 수일 때 앞에 0을 붙여 포맷팅한다', () => {
     const date = new Date(2024, 1, 1); // 2024년 2월 1일
     expect(formatDate(date)).toBe('2024-02-01');
+  });
+});
+
+describe('formatMinuteTime', () => {
+  it('30에 대하여 30분으로 포맷팅한다.', () => {
+    expect(formatMinuteTime(30)).toBe('30분');
+  });
+
+  it('1시간 이상에 대하여 시간을 붙여 포맷팅한다.', () => {
+    expect(formatMinuteTime(60)).toBe('1시간');
+    expect(formatMinuteTime(128)).toBe('2시간 8분');
+  });
+
+  it('유효하지 않은 값을 넣은 경우 Invalid Minutes를 반환한다.', () => {
+    expect(formatMinuteTime(-120)).toBe('Invalid Minutes');
+    expect(formatMinuteTime(0)).toBe('Invalid Minutes');
   });
 });

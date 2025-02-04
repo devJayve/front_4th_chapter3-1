@@ -6,3 +6,8 @@ export interface GetFilteredEventsParams {
   currentDate: Date;
   view: 'week' | 'month';
 }
+
+export interface CreateNotificationMessageParams {
+  event: Event;
+  now: Date;
+}

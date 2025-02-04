@@ -108,3 +108,17 @@ export function formatDate(currentDate: Date, day?: number) {
     fillZero(day ?? currentDate.getDate()),
   ].join('-');
 }
+
+export function formatMinuteTime(min: number) {
+  if (min <= 0) return 'Invalid Minutes';
+  if (min >= 60) {
+    const hours = Math.floor(min / 60);
+    const minutes = min % 60;
+
+    if (minutes === 0) {
+      return `${hours}시간`;
+    }
+    return `${hours}시간 ${minutes}분`;
+  }
+  return `${min}분`;
+}
