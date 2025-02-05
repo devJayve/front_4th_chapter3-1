@@ -10,7 +10,6 @@ let events: Event[] = initialEvents as Event[];
 export const handlers = [
   // 이벤트 리스트 조회
   http.get('/api/events', () => {
-    console.log(events);
     return HttpResponse.json({ events });
   }),
 
