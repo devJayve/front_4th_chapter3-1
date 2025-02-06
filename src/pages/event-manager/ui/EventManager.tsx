@@ -8,20 +8,20 @@ import EventCalendar from '@/widgets/event-calendar/ui/EventCalendar.tsx';
 import EventCardList from '@/widgets/event-card-list/EventCardList.tsx';
 
 function EventManager() {
-  const { isLoading, editingEvent, setEditingEvent } = useEventManager();
+  const { isLoading } = useEventManager();
 
   if (isLoading) {
-    return <div></div>;
+    return <div data-testid="loading"></div>;
   }
 
   return (
     <Box w="full" h="100vh" m="auto" p={5}>
       <Flex gap={6} h="full">
-        <EventForm mode={editingEvent ? 'edit' : 'create'} editingEvent={editingEvent} />
+        <EventForm />
         <EventCalendar />
         <VStack data-testid="event-list" w="500px" h="full" overflowY="auto">
           <EventSearch />
-          <EventCardList setEditingEvent={setEditingEvent} />
+          <EventCardList />
         </VStack>
       </Flex>
 

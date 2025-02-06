@@ -1,19 +1,13 @@
 import { BellIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import { Box, HStack, IconButton, Text, VStack } from '@chakra-ui/react';
-import React from 'react';
 
 import { notificationOptions } from '@/entities/event/config';
 import useEventStore from '@/entities/event/store/useEventStore.ts';
-import { Event } from '@/types.ts';
 import { useEventCardList } from '@/widgets/event-card-list/model/useEventCardList.ts';
 
-interface EventCardListProps {
-  setEditingEvent: React.Dispatch<React.SetStateAction<Event | null>>;
-}
-
-function EventCardList({ setEditingEvent }: EventCardListProps) {
+function EventCardList() {
   const { filteredEvents, notifiedEvents } = useEventStore();
-  const { handleEventDelete, handleEventEdit } = useEventCardList({ setEditingEvent });
+  const { handleEventDelete, handleEventEdit } = useEventCardList();
 
   return filteredEvents.length === 0 ? (
     <Text>검색 결과가 없습니다.</Text>

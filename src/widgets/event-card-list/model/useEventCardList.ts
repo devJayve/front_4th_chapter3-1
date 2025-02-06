@@ -1,14 +1,10 @@
-import React from 'react';
-
 import { useEventOperations } from '@/entities/event/model/useEventOperations.v2.ts';
+import useEventStore from '@/entities/event/store/useEventStore.ts';
 import { Event } from '@/types.ts';
 
-interface UseEventCardListProps {
-  setEditingEvent: React.Dispatch<React.SetStateAction<Event | null>>;
-}
-
-export const useEventCardList = ({ setEditingEvent }: UseEventCardListProps) => {
+export const useEventCardList = () => {
   const { deleteEvent } = useEventOperations();
+  const { setEditingEvent } = useEventStore();
   const handleEventEdit = (event: Event) => {
     setEditingEvent(event);
   };

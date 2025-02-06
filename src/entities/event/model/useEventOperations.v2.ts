@@ -19,9 +19,9 @@ export const useEventOperations = () => {
 
   const handleEventCreate = async (eventFormData: EventForm) => {
     try {
-      createEvent(eventFormData).then(async (event) => {
+      createEvent(eventFormData).then(async () => {
         await handleEventFetch();
-        showToast(`${event.title} 일정이 추가되었습니다.`, 'success');
+        showToast(`일정이 추가되었습니다.`, 'success');
       });
     } catch (error) {
       showToast('일정 추가 실패', 'error', error);
@@ -30,9 +30,9 @@ export const useEventOperations = () => {
 
   const handleEventUpdate = async (eventData: Event) => {
     try {
-      updateEvent(eventData).then(async (event) => {
+      updateEvent(eventData).then(async () => {
         await handleEventFetch();
-        showToast(`${event.title} 일정이 수정되었습니다.`, 'success');
+        showToast(`일정이 수정되었습니다.`, 'success');
       });
     } catch (error) {
       showToast('일정 저장 실패', 'error', error);
@@ -41,9 +41,9 @@ export const useEventOperations = () => {
 
   const handleEventDelete = async (id: string) => {
     try {
-      deleteEvent(id).then(async (event) => {
+      deleteEvent(id).then(async () => {
         await handleEventFetch();
-        showToast(`${event.title} 일정이 삭제되었습니다.`, 'info');
+        showToast(`일정이 삭제되었습니다.`, 'info');
       });
     } catch (error) {
       showToast('일정 삭제 실패', 'error', error);

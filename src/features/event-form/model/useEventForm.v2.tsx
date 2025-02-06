@@ -1,5 +1,5 @@
 import { useToast } from '@chakra-ui/react';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 
 import { useDialogStore } from '@/entities/dialog/store/useDialogStore.ts';
 import { useEventOperations } from '@/entities/event/model/useEventOperations.v2.ts';
@@ -11,12 +11,6 @@ import { getTimeErrorMessage } from '@/utils/timeValidation';
 
 type TimeErrorRecord = Record<'startTimeError' | 'endTimeError', string | null>;
 
-interface UseEventFormProps {
-  editingEvent: Event | null;
-  eventId?: string;
-  mode: 'create' | 'edit';
-}
-
 const initialEventForm: EventForm = {
   title: '',
   date: '',
@@ -26,7 +20,7 @@ const initialEventForm: EventForm = {
   location: '',
   category: '',
   repeat: {
-    type: 'none',
+    type: 'daily',
     interval: 1,
     endDate: '',
   },
@@ -38,15 +32,26 @@ const initialTimeError: TimeErrorRecord = {
   endTimeError: null,
 };
 
-export const useEventForm = ({ eventId, editingEvent, mode }: UseEventFormProps) => {
-  const [eventForm, setEventForm] = useState<EventForm>(editingEvent || initialEventForm);
-  const [repeatInfo, setRepeatInfo] = useState<RepeatInfo | null>(editingEvent?.repeat || null);
+export const useEventForm = () => {
+  const { events, editingEvent, setEditingEvent } = useEventStore();
+  const [isEditing, setIsEditing] = useState<Boolean>(editingEvent !== null);
+  const [eventForm, setEventForm] = useState<EventForm>(initialEventForm);
+  const [showRepeatInfo, setShowRepeatInfo] = useState(eventForm.repeat?.type !== 'none');
   const { createEvent, updateEvent } = useEventOperations();
   const [{ startTimeError, endTimeError }, setTimeError] =
     useState<TimeErrorRecord>(initialTimeError);
   const toast = useToast();
-  const { events } = useEventStore();
   const { open } = useDialogStore();
+
+  useEffect(() => {
+    if (editingEvent) {
+      setIsEditing(true);
+      setEventForm(editingEvent);
+    } else {
+      setIsEditing(false);
+      setEventForm(initialEventForm);
+    }
+  }, [editingEvent]);
 
   const handleStartTimeChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newStartTime = e.target.value;
@@ -71,13 +76,12 @@ export const useEventForm = ({ eventId, editingEvent, mode }: UseEventFormProps)
   };
 
   const updateRepeatInfo = (repeatInfoData: Partial<RepeatInfo>) => {
-    if (repeatInfoData?.type === 'none') {
-      setRepeatInfo(null);
-      return;
-    }
-    setRepeatInfo((prev) => ({
-      ...prev!,
-      ...repeatInfoData,
+    setEventForm((prev) => ({
+      ...prev,
+      repeat: {
+        ...prev.repeat,
+        ...repeatInfoData,
+      },
     }));
   };
 
@@ -108,34 +112,39 @@ export const useEventForm = ({ eventId, editingEvent, mode }: UseEventFormProps)
       });
       return false;
     }
+    return true;
   };
 
   const submitEventForm = async () => {
     if (!validateEventForm()) return;
 
-    const overlapping = findOverlappingEvents({ ...eventForm, id: eventId }, events);
+    const overlapping = findOverlappingEvents({ ...eventForm, id: editingEvent?.id }, events);
 
     if (overlapping.length) {
       open(<OverlapDialog overlappingEvents={overlapping} onConfirm={uploadEvent} />);
+      return;
     }
 
     await uploadEvent();
   };
 
   const uploadEvent = async () => {
-    if (mode === 'create') {
-      await createEvent(eventForm);
-    } else {
-      const event: Event = { ...eventForm, id: eventId! };
+    if (isEditing) {
+      const event: Event = { ...eventForm, id: editingEvent?.id! };
       await updateEvent(event);
+      setEditingEvent(null);
+    } else {
+      await createEvent(eventForm);
     }
     resetForm();
   };
 
   return {
+    isEditing,
     eventForm,
-    repeatInfo,
     updateRepeatInfo,
+    showRepeatInfo,
+    setShowRepeatInfo,
     startTimeError,
     endTimeError,
     handleStartTimeChange,

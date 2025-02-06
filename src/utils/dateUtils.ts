@@ -111,6 +111,21 @@ export function formatDate(currentDate: Date, day?: number) {
 
 export function formatMinuteTime(min: number) {
   if (min <= 0) return 'Invalid Minutes';
+  if (min >= 1440) {
+    const days = Math.floor(min / 1440);
+    const remainingMinutes = min % 1440;
+    const hours = Math.floor(remainingMinutes / 60);
+    const minutes = remainingMinutes % 60;
+
+    if (hours === 0 && minutes === 0) {
+      return `${days}일`;
+    } else if (minutes === 0) {
+      return `${days}일 ${hours}시간`;
+    } else if (hours === 0) {
+      return `${days}일 ${minutes}분`;
+    }
+    return `${days}일 ${hours}시간 ${minutes}분`;
+  }
   if (min >= 60) {
     const hours = Math.floor(min / 60);
     const minutes = min % 60;

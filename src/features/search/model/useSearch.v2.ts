@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import useCalendarStore from '@/entities/calendar/store/useCalendarStore.ts';
 import useEventStore from '@/entities/event/store/useEventStore.ts';
-import { getFilteredEvents } from '@/utils/eventUtils';
+import { getFilteredEvents, sortEventsByDate } from '@/utils/eventUtils';
 
 export const useSearch = () => {
   const { currentDate, view } = useCalendarStore();
@@ -11,8 +11,9 @@ export const useSearch = () => {
   const { events, filteredEvents, setFilteredEvents } = useEventStore();
 
   useEffect(() => {
-    if (events || filteredEvents) return;
-    setFilteredEvents(getFilteredEvents({ events, searchTerm, currentDate, view }));
+    const filteredEvents = getFilteredEvents({ events, searchTerm, currentDate, view });
+    const sortedEvents = sortEventsByDate(filteredEvents);
+    setFilteredEvents(sortedEvents);
   }, [searchTerm, currentDate, view, events]);
 
   return {

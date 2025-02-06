@@ -23,7 +23,12 @@ function OverlapDialog({ overlappingEvents, onConfirm }: OverlapDialogProps) {
   const close = useDialogStore((state) => state.close);
 
   return (
-    <AlertDialog isOpen onClose={close} leastDestructiveRef={cancelRef}>
+    <AlertDialog
+      data-testid="overlap-dialog"
+      isOpen
+      onClose={close}
+      leastDestructiveRef={cancelRef}
+    >
       <AlertDialogOverlay>
         <AlertDialogContent>
           <AlertDialogHeader fontSize="lg" fontWeight="bold">

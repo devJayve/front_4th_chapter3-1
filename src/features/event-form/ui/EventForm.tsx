@@ -12,13 +12,8 @@ import {
 } from '@chakra-ui/react';
 
 import { useEventForm } from '@/features/event-form/model/useEventForm.v2.tsx';
-import { Event, RepeatType } from '@/types.ts';
+import { RepeatType } from '@/types.ts';
 import { getTimeErrorMessage } from '@/utils/timeValidation.ts';
-
-interface EventFormProps {
-  mode: 'create' | 'edit';
-  editingEvent: Event | null;
-}
 
 const categories = ['업무', '개인', '가족', '기타'];
 
@@ -30,10 +25,12 @@ const notificationOptions = [
   { value: 1440, label: '1일 전' },
 ];
 
-function EventForm({ mode, editingEvent }: EventFormProps) {
+function EventForm() {
   const {
+    isEditing,
     eventForm,
-    repeatInfo,
+    showRepeatInfo,
+    setShowRepeatInfo,
     updateRepeatInfo,
     startTimeError,
     endTimeError,
@@ -41,17 +38,17 @@ function EventForm({ mode, editingEvent }: EventFormProps) {
     handleEndTimeChange,
     updateEventForm,
     submitEventForm,
-  } = useEventForm({ mode, editingEvent, eventId: editingEvent?.id });
+  } = useEventForm();
 
   return (
     <>
       <VStack data-testid="event-form" w="400px" spacing={5} align="stretch">
-        <Heading>{mode === 'edit' ? '일정 수정' : '일정 추가'}</Heading>
+        <Heading>{isEditing ? '일정 수정' : '일정 추가'}</Heading>
 
         <FormControl>
           <FormLabel>제목</FormLabel>
           <Input
-            value={eventForm.title}
+            value={eventForm.title || ''}
             onChange={(e) => updateEventForm({ title: e.target.value })}
           />
         </FormControl>
@@ -60,7 +57,7 @@ function EventForm({ mode, editingEvent }: EventFormProps) {
           <FormLabel>날짜</FormLabel>
           <Input
             type="date"
-            value={eventForm.date}
+            value={eventForm.date || ''}
             onChange={(e) => updateEventForm({ date: e.target.value })}
           />
         </FormControl>
@@ -71,7 +68,7 @@ function EventForm({ mode, editingEvent }: EventFormProps) {
             <Tooltip label={startTimeError} isOpen={!!startTimeError} placement="top">
               <Input
                 type="time"
-                value={eventForm.startTime}
+                value={eventForm.startTime || ''}
                 onChange={handleStartTimeChange}
                 onBlur={() => getTimeErrorMessage(eventForm.startTime, eventForm.endTime)}
                 isInvalid={!!startTimeError}
@@ -83,7 +80,7 @@ function EventForm({ mode, editingEvent }: EventFormProps) {
             <Tooltip label={endTimeError} isOpen={!!endTimeError} placement="top">
               <Input
                 type="time"
-                value={eventForm.endTime}
+                value={eventForm.endTime || ''}
                 onChange={handleEndTimeChange}
                 onBlur={() => getTimeErrorMessage(eventForm.startTime, eventForm.endTime)}
                 isInvalid={!!endTimeError}
@@ -95,7 +92,7 @@ function EventForm({ mode, editingEvent }: EventFormProps) {
         <FormControl>
           <FormLabel>설명</FormLabel>
           <Input
-            value={eventForm.description}
+            value={eventForm.description || ''}
             onChange={(e) => updateEventForm({ description: e.target.value })}
           />
         </FormControl>
@@ -103,7 +100,7 @@ function EventForm({ mode, editingEvent }: EventFormProps) {
         <FormControl>
           <FormLabel>위치</FormLabel>
           <Input
-            value={eventForm.location}
+            value={eventForm.location || ''}
             onChange={(e) => updateEventForm({ location: e.target.value })}
           />
         </FormControl>
@@ -111,7 +108,7 @@ function EventForm({ mode, editingEvent }: EventFormProps) {
         <FormControl>
           <FormLabel>카테고리</FormLabel>
           <Select
-            value={eventForm.category}
+            value={eventForm.category || ''}
             onChange={(e) => updateEventForm({ category: e.target.value })}
           >
             <option value="">카테고리 선택</option>
@@ -125,7 +122,10 @@ function EventForm({ mode, editingEvent }: EventFormProps) {
 
         <FormControl>
           <FormLabel>반복 설정</FormLabel>
-          <Checkbox isChecked={!!repeatInfo} onChange={(e) => console.log(e.target.value)}>
+          <Checkbox
+            isChecked={showRepeatInfo}
+            onChange={(e) => setShowRepeatInfo(e.target.checked)}
+          >
             반복 일정
           </Checkbox>
         </FormControl>
@@ -144,7 +144,7 @@ function EventForm({ mode, editingEvent }: EventFormProps) {
           </Select>
         </FormControl>
 
-        {!!repeatInfo && (
+        {showRepeatInfo && (
           <VStack width="100%">
             <FormControl>
               <FormLabel>반복 유형</FormLabel>
@@ -181,7 +181,7 @@ function EventForm({ mode, editingEvent }: EventFormProps) {
         )}
 
         <Button data-testid="event-submit-button" onClick={submitEventForm} colorScheme="blue">
-          {editingEvent ? '일정 수정' : '일정 추가'}
+          {isEditing ? '일정 수정' : '일정 추가'}
         </Button>
       </VStack>
     </>

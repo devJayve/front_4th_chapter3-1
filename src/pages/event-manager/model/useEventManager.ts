@@ -2,11 +2,9 @@ import { useToast } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 
 import { useEventOperations } from '@/entities/event/model/useEventOperations.v2.ts';
-import { Event } from '@/types';
 
 export const useEventManager = () => {
   const toast = useToast();
-  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { fetchEvents } = useEventOperations();
 
@@ -26,7 +24,5 @@ export const useEventManager = () => {
 
   return {
     isLoading,
-    editingEvent,
-    setEditingEvent,
   };
 };
