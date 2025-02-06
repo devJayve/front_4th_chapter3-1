@@ -13,17 +13,12 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
-import { Event } from '../../types';
-import {
-  formatDate,
-  formatMonth,
-  getEventsForDay,
-  getWeeksAtMonth,
-} from '../../utils/dateUtils.ts';
+import { weekDays } from '@/entities/event/config';
+import { Event } from '@/types.ts';
+import { formatDate, formatMonth, getEventsForDay, getWeeksAtMonth } from '@/utils/dateUtils.ts';
 
 interface MonthCalendarProps {
   currentDate: Date;
-  weekDays: string[];
   filteredEvents: Event[];
   notifiedEvents: string[];
   holidays: { [key: string]: string };
@@ -31,7 +26,6 @@ interface MonthCalendarProps {
 
 function MonthCalendar({
   currentDate,
-  weekDays,
   filteredEvents,
   notifiedEvents,
   holidays,

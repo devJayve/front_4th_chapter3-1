@@ -1,15 +1,18 @@
 import { useToast } from '@chakra-ui/react';
 import { ChangeEvent, useState } from 'react';
 
-import { getTimeErrorMessage } from '../utils/timeValidation';
-
+import { useDialogStore } from '@/entities/dialog/store/useDialogStore.ts';
 import { useEventOperations } from '@/entities/event/model/useEventOperations.v2.ts';
+import useEventStore from '@/entities/event/store/useEventStore.ts';
+import OverlapDialog from '@/features/dialog/OverlapDialog.tsx';
 import { Event, EventForm, RepeatInfo } from '@/types';
+import { findOverlappingEvents } from '@/utils/eventOverlap.ts';
+import { getTimeErrorMessage } from '@/utils/timeValidation';
 
 type TimeErrorRecord = Record<'startTimeError' | 'endTimeError', string | null>;
 
 interface UseEventFormProps {
-  editingEvent?: Event;
+  editingEvent: Event | null;
   eventId?: string;
   mode: 'create' | 'edit';
 }
@@ -42,6 +45,8 @@ export const useEventForm = ({ eventId, editingEvent, mode }: UseEventFormProps)
   const [{ startTimeError, endTimeError }, setTimeError] =
     useState<TimeErrorRecord>(initialTimeError);
   const toast = useToast();
+  const { events } = useEventStore();
+  const { open } = useDialogStore();
 
   const handleStartTimeChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newStartTime = e.target.value;
@@ -103,22 +108,21 @@ export const useEventForm = ({ eventId, editingEvent, mode }: UseEventFormProps)
       });
       return false;
     }
-
-    //TODO:: 이벤트 스토어 생성 및 중복 체크
-    // const overlapping = findOverlappingEvents(eventData, events);
-    // if (overlapping.length > 0) {
-    //   setOverlappingEvents(overlapping);
-    //   setIsOverlapDialogOpen(true);
-    // } else {
-    //   await saveEvent(eventData);
-    //   resetForm();
-    // }
-    return true;
   };
 
   const submitEventForm = async () => {
     if (!validateEventForm()) return;
 
+    const overlapping = findOverlappingEvents({ ...eventForm, id: eventId }, events);
+
+    if (overlapping.length) {
+      open(<OverlapDialog overlappingEvents={overlapping} onConfirm={uploadEvent} />);
+    }
+
+    await uploadEvent();
+  };
+
+  const uploadEvent = async () => {
     if (mode === 'create') {
       await createEvent(eventForm);
     } else {

@@ -1,23 +1,20 @@
 import { BellIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import { Box, HStack, IconButton, Text, VStack } from '@chakra-ui/react';
+import React from 'react';
 
-import { Event } from '../../types.ts';
+import { notificationOptions } from '@/entities/event/config';
+import useEventStore from '@/entities/event/store/useEventStore.ts';
+import { Event } from '@/types.ts';
+import { useEventCardList } from '@/widgets/event-card-list/model/useEventCardList.ts';
 
 interface EventCardListProps {
-  filteredEvents: Event[];
-  notifiedEvents: string[];
-  notificationOptions: { value: number; label: string }[];
-  editEvent: (event: Event) => void;
-  deleteEvent: (id: string) => void;
+  setEditingEvent: React.Dispatch<React.SetStateAction<Event | null>>;
 }
 
-function EventCardList({
-  filteredEvents,
-  notifiedEvents,
-  notificationOptions,
-  editEvent,
-  deleteEvent,
-}: EventCardListProps) {
+function EventCardList({ setEditingEvent }: EventCardListProps) {
+  const { filteredEvents, notifiedEvents } = useEventStore();
+  const { handleEventDelete, handleEventEdit } = useEventCardList({ setEditingEvent });
+
   return filteredEvents.length === 0 ? (
     <Text>검색 결과가 없습니다.</Text>
   ) : (
@@ -68,12 +65,12 @@ function EventCardList({
             <IconButton
               aria-label="Edit event"
               icon={<EditIcon />}
-              onClick={() => editEvent(event)}
+              onClick={() => handleEventEdit(event)}
             />
             <IconButton
               aria-label="Delete event"
               icon={<DeleteIcon />}
-              onClick={() => deleteEvent(event.id)}
+              onClick={() => handleEventDelete(event.id)}
             />
           </HStack>
         </HStack>

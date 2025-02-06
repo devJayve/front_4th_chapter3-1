@@ -1,45 +1,50 @@
 import { useToast } from '@chakra-ui/react';
-import { useEffect } from 'react';
 
-import { getEvents } from '@/entities/event/lib';
+import { createEvent, deleteEvent, getEvents, updateEvent } from '@/entities/event/lib';
+import useEventStore from '@/entities/event/store/useEventStore.ts';
 import { Event, EventForm } from '@/types';
 
 export const useEventOperations = () => {
   const toast = useToast();
+  const { setEvents } = useEventStore();
 
-  const fetchEvents = async () => {
+  const handleEventFetch = async () => {
     try {
-      return await getEvents();
+      const events = await getEvents();
+      setEvents(events);
     } catch (error) {
       showToast('이벤트 로딩 실패', 'error', error);
     }
   };
 
-  const createEvent = async (eventFormData: EventForm) => {
+  const handleEventCreate = async (eventFormData: EventForm) => {
     try {
-      await createEvent(eventFormData);
-
-      showToast('일정이 추가되었습니다.', 'success');
+      createEvent(eventFormData).then(async (event) => {
+        await handleEventFetch();
+        showToast(`${event.title} 일정이 추가되었습니다.`, 'success');
+      });
     } catch (error) {
       showToast('일정 추가 실패', 'error', error);
     }
   };
 
-  const updateEvent = async (eventData: Event) => {
+  const handleEventUpdate = async (eventData: Event) => {
     try {
-      await updateEvent(eventData);
-
-      showToast('일정이 수정되었습니다.', 'success');
+      updateEvent(eventData).then(async (event) => {
+        await handleEventFetch();
+        showToast(`${event.title} 일정이 수정되었습니다.`, 'success');
+      });
     } catch (error) {
       showToast('일정 저장 실패', 'error', error);
     }
   };
 
-  const deleteEvent = async (id: string) => {
+  const handleEventDelete = async (id: string) => {
     try {
-      await deleteEvent(id);
-
-      showToast('일정이 삭제되었습니다.', 'info');
+      deleteEvent(id).then(async (event) => {
+        await handleEventFetch();
+        showToast(`${event.title} 일정이 삭제되었습니다.`, 'info');
+      });
     } catch (error) {
       showToast('일정 삭제 실패', 'error', error);
     }
@@ -55,19 +60,10 @@ export const useEventOperations = () => {
     });
   };
 
-  async function init() {
-    await fetchEvents();
-    toast({
-      title: '일정 로딩 완료!',
-      status: 'info',
-      duration: 1000,
-    });
-  }
-
-  useEffect(() => {
-    init();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  return { fetchEvents, createEvent, updateEvent, deleteEvent };
+  return {
+    fetchEvents: handleEventFetch,
+    createEvent: handleEventCreate,
+    updateEvent: handleEventUpdate,
+    deleteEvent: handleEventDelete,
+  };
 };

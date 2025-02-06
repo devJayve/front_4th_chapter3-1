@@ -1,11 +1,9 @@
 import { FormControl, FormLabel, Input } from '@chakra-ui/react';
 
-interface EventSearchProps {
-  searchTerm: string;
-  setSearchTerm: (value: string) => void;
-}
+import { useSearch } from '@/features/search/model/useSearch.v2.ts';
 
-function EventSearch({ searchTerm, setSearchTerm }: EventSearchProps) {
+function EventSearch() {
+  const { searchTerm, setSearchTerm } = useSearch();
   return (
     <FormControl>
       <FormLabel>일정 검색</FormLabel>

@@ -1,14 +1,9 @@
 import { Alert, AlertIcon, AlertTitle, Box, CloseButton, VStack } from '@chakra-ui/react';
-import React from 'react';
 
-import { Notification } from '../../types.ts';
+import { useNotifications } from '@/features/notification/model/useNotification.v2.ts';
 
-interface EventNotificationProps {
-  notifications: Notification[];
-  setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>;
-}
-
-function EventNotification({ notifications, setNotifications }: EventNotificationProps) {
+function EventNotification() {
+  const { notifications, setNotifications } = useNotifications();
   return (
     notifications.length > 0 && (
       <VStack position="fixed" top={4} right={4} spacing={2} align="flex-end">

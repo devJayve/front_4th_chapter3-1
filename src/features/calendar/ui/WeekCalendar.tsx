@@ -13,22 +13,17 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
-import { Event } from '../../types';
-import { formatWeek, getWeekDates } from '../../utils/dateUtils.ts';
+import { weekDays } from '@/entities/event/config';
+import { Event } from '@/types.ts';
+import { formatWeek, getWeekDates } from '@/utils/dateUtils.ts';
 
 interface WeekCalendarProps {
   currentDate: Date;
   filteredEvents: Event[];
   notifiedEvents: string[];
-  weekDays: string[];
 }
 
-function WeekCalendar({
-  currentDate,
-  filteredEvents,
-  notifiedEvents,
-  weekDays,
-}: WeekCalendarProps) {
+function WeekCalendar({ currentDate, filteredEvents, notifiedEvents }: WeekCalendarProps) {
   const weekDates = getWeekDates(currentDate);
   return (
     <VStack data-testid="week-view" align="stretch" w="full" spacing={4}>

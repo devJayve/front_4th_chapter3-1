@@ -10,55 +10,20 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 
-import { Event, EventForm, RepeatType } from '../../types';
+import { useDialogStore } from '@/entities/dialog/store/useDialogStore.ts';
+import { Event } from '@/types';
 
 interface OverlapDialogProps {
-  isOverlapDialogOpen: boolean;
-  cancelRef: React.RefObject<HTMLButtonElement>;
   overlappingEvents: Event[];
-  setIsOverlapDialogOpen: (isOpen: boolean) => void;
-  saveEvent: (event: Event | EventForm) => void;
-  editingEvent: Event | null;
-  title: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  description: string;
-  location: string;
-  category: string;
-  isRepeating: boolean;
-  repeatType: RepeatType;
-  repeatInterval: number;
-  repeatEndDate: string | null;
-  notificationTime: number;
+  onConfirm: () => void;
 }
 
-function OverlapDialog({
-  isOverlapDialogOpen,
-  cancelRef,
-  overlappingEvents,
-  setIsOverlapDialogOpen,
-  saveEvent,
-  editingEvent,
-  title,
-  date,
-  startTime,
-  endTime,
-  description,
-  location,
-  category,
-  isRepeating,
-  repeatType,
-  repeatInterval,
-  repeatEndDate,
-  notificationTime,
-}: OverlapDialogProps) {
+function OverlapDialog({ overlappingEvents, onConfirm }: OverlapDialogProps) {
+  const cancelRef = React.useRef<HTMLButtonElement>(null);
+  const close = useDialogStore((state) => state.close);
+
   return (
-    <AlertDialog
-      isOpen={isOverlapDialogOpen}
-      leastDestructiveRef={cancelRef}
-      onClose={() => setIsOverlapDialogOpen(false)}
-    >
+    <AlertDialog isOpen onClose={close} leastDestructiveRef={cancelRef}>
       <AlertDialogOverlay>
         <AlertDialogContent>
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -76,29 +41,14 @@ function OverlapDialog({
           </AlertDialogBody>
 
           <AlertDialogFooter>
-            <Button ref={cancelRef} onClick={() => setIsOverlapDialogOpen(false)}>
+            <Button ref={cancelRef} onClick={close}>
               취소
             </Button>
             <Button
               colorScheme="red"
               onClick={() => {
-                setIsOverlapDialogOpen(false);
-                saveEvent({
-                  id: editingEvent ? editingEvent.id : undefined,
-                  title,
-                  date,
-                  startTime,
-                  endTime,
-                  description,
-                  location,
-                  category,
-                  repeat: {
-                    type: isRepeating ? repeatType : 'none',
-                    interval: repeatInterval,
-                    endDate: repeatEndDate || undefined,
-                  },
-                  notificationTime,
-                });
+                onConfirm();
+                close();
               }}
               ml={3}
             >
