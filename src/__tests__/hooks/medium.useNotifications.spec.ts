@@ -85,7 +85,7 @@ describe('useNotifications', () => {
     expect(result.current.notifiedEvents).toHaveLength(1);
 
     vi.setSystemTime(new Date('2024-10-15T08:55'));
-    await act(async () => {
+    act(() => {
       vi.advanceTimersByTime(1000);
     });
 
