@@ -22,7 +22,8 @@ export const useNotifications = () => {
     ]);
 
     setNotifiedEvents([...notifiedEvents, ...upcomingEvents.map(({ id }) => id)]);
-  }, [events, notifiedEvents, setNotifiedEvents]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [events, notifiedEvents]);
 
   const removeNotification = (index: number) => {
     setNotifications((prev) => prev.filter((_, i) => i !== index));

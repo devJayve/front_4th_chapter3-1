@@ -14,7 +14,7 @@ export const useSearch = () => {
     const filteredEvents = getFilteredEvents({ events, searchTerm, currentDate, view });
     const sortedEvents = sortEventsByDate(filteredEvents);
     setFilteredEvents(sortedEvents);
-  }, [searchTerm, currentDate, view, events]);
+  }, [searchTerm, currentDate, view, events, setFilteredEvents]);
 
   return {
     searchTerm,

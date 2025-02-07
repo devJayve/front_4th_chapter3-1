@@ -180,7 +180,11 @@ function EventForm() {
           </VStack>
         )}
 
-        <Button data-testid="event-submit-button" onClick={submitEventForm} colorScheme="blue">
+        <Button
+          data-testid="event-submit-button"
+          onClick={() => submitEventForm()}
+          colorScheme="blue"
+        >
           {isEditing ? '일정 수정' : '일정 추가'}
         </Button>
       </VStack>

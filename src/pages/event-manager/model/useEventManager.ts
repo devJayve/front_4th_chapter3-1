@@ -20,6 +20,7 @@ export const useEventManager = () => {
       setIsLoading(false);
     }
     _fetchEvents();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {
