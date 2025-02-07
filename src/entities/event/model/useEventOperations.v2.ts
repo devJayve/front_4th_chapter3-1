@@ -50,8 +50,8 @@ export const useEventOperations = () => {
     }
   };
 
-  const showToast = (title: string, status: 'info' | 'error' | 'success', error?: any) => {
-    if (status === 'error') console.log(error);
+  const showToast = (title: string, status: 'info' | 'error' | 'success', error?: unknown) => {
+    if (status === 'error') console.error(error);
     toast({
       title,
       status,

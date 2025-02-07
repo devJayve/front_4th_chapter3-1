@@ -34,7 +34,7 @@ const initialTimeError: TimeErrorRecord = {
 
 export const useEventForm = () => {
   const { events, editingEvent, setEditingEvent } = useEventStore();
-  const [isEditing, setIsEditing] = useState<Boolean>(editingEvent !== null);
+  const [isEditing, setIsEditing] = useState<boolean>(editingEvent !== null);
   const [eventForm, setEventForm] = useState<EventForm>(initialEventForm);
   const [showRepeatInfo, setShowRepeatInfo] = useState(eventForm.repeat?.type !== 'none');
   const { createEvent, updateEvent } = useEventOperations();
@@ -129,8 +129,8 @@ export const useEventForm = () => {
   };
 
   const uploadEvent = async () => {
-    if (isEditing) {
-      const event: Event = { ...eventForm, id: editingEvent?.id! };
+    if (isEditing && editingEvent?.id) {
+      const event: Event = { ...eventForm, id: editingEvent?.id };
       await updateEvent(event);
       setEditingEvent(null);
     } else {

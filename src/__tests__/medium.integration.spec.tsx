@@ -1,14 +1,5 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import {
-  render,
-  screen,
-  within,
-  act,
-  waitFor,
-  fireEvent,
-  waitForElementToBeRemoved,
-  cleanup,
-} from '@testing-library/react';
+import { render, screen, within, waitFor, fireEvent, cleanup } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { afterEach } from 'vitest';
 
