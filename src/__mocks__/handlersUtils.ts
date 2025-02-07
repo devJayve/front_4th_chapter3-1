@@ -3,10 +3,10 @@ import { http, HttpResponse } from 'msw';
 import { server } from '../setupTests.ts';
 import { Event, EventForm } from '../types';
 
-// interface MockError {
-//   statusCode: number;
-//   message: string | null;
-// }
+interface MockError {
+  status: number;
+  message?: string | null;
+}
 
 // ! Hard
 // ! 이벤트는 생성, 수정 되면 fetch를 다시 해 상태를 업데이트 합니다. 이를 위한 제어가 필요할 것 같은데요. 어떻게 작성해야 테스트가 병렬로 돌아도 안정적이게 동작할까요?
@@ -63,7 +63,7 @@ export const setupMockHandlerUpdating = (initEvents = [] as Event[]) => {
   server.use(...handlers);
 };
 
-export const setupMockHandlerDeletion = (initEvents = [] as Event[]) => {
+export const setupMockHandlerDeletion = (initEvents = [] as Event[], error?: MockError) => {
   let events = [...initEvents];
 
   const handlers = [
@@ -71,6 +71,8 @@ export const setupMockHandlerDeletion = (initEvents = [] as Event[]) => {
       return HttpResponse.json({ events });
     }),
     http.delete('/api/events/:id', ({ params }) => {
+      if (error) return HttpResponse.error();
+
       const id = params.id;
 
       events = events.filter((event) => event.id !== id);
