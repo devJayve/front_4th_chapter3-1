@@ -1,5 +1,5 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, waitFor, fireEvent, cleanup } from '@testing-library/react';
+import { render, screen, within, waitFor, fireEvent, cleanup, act } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { afterEach } from 'vitest';
 
@@ -13,6 +13,7 @@ import {
 } from '@/__mocks__/handlersUtils.ts';
 import { DialogProvider } from '@/app/provider/DialogProvider.tsx';
 import App from '@/App.tsx';
+import EventNotification from '@/features/notification/ui/EventNotification.tsx';
 import EventManager from '@/pages/event-manager/ui/EventManager.tsx';
 
 const REPEAT_TYPE_MAP = {
@@ -660,7 +661,8 @@ describe('일정 충돌', () => {
 });
 
 it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
-  vi.setSystemTime(new Date('2025-02-14T13:50'));
+  vi.useFakeTimers({ shouldAdvanceTime: true });
+  vi.setSystemTime('2025-02-14T13:50');
 
   const mockEvent: Event = {
     id: '1',
@@ -679,12 +681,19 @@ it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트
   };
   setupMockHandlerCreation([mockEvent]);
 
-  //TOOD::수정
   render(
     <ChakraProvider>
-      <App />
+      <EventManager />
     </ChakraProvider>
   );
+
+  await waitFor(() => {
+    expect(screen.getByTestId('event-item-1')).toBeInTheDocument();
+  });
+
+  act(() => {
+    vi.advanceTimersByTime(1000);
+  });
 
   await waitFor(() => {
     expect(screen.getByText(/일정이 시작됩니다/)).toBeInTheDocument();
