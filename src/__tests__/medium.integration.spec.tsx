@@ -7,8 +7,10 @@ import {
   waitFor,
   fireEvent,
   waitForElementToBeRemoved,
+  cleanup,
 } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
+import { afterEach } from 'vitest';
 
 import { Event, EventForm } from '../types';
 import { formatMinuteTime } from '../utils/dateUtils.ts';
@@ -64,6 +66,10 @@ const createEvent = async (event: EventForm) => {
 
   await user.click(screen.getByTestId('event-submit-button'));
 };
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 // ! HINT. "검색 결과가 없습니다"는 초기에 노출되는데요. 그럼 검증하고자 하는 액션이 실행되기 전에 검증해버리지 않을까요? 이 테스트를 신뢰성있게 만드려면 어떻게 할까요?
 describe('일정 CRUD 및 기본 기능', () => {
@@ -236,6 +242,12 @@ describe('일정 CRUD 및 기본 기능', () => {
 });
 
 describe('일정 뷰', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+    cleanup();
+    vi.clearAllMocks();
+  });
+
   it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
     const mockEvents: Event[] = [
       {
@@ -337,9 +349,11 @@ describe('일정 뷰', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/검색 결과가 없습니다/i)).toBeInTheDocument();
+      expect(screen.getByText(/2025년 2월/i)).toBeInTheDocument();
     });
 
+    const viewButton = screen.getByLabelText('view');
+    await userEvent.selectOptions(viewButton, 'month');
     const monthView = screen.getByTestId('month-view');
     expect(monthView).toBeInTheDocument();
     expect(monthView).not.toHaveTextContent('테스트 이벤트');
@@ -374,11 +388,11 @@ describe('일정 뷰', () => {
       expect(screen.getByText(/2025년 2월/i)).toBeInTheDocument();
     });
 
-    await waitFor(() => {
-      const monthView = screen.getByTestId('month-view');
-      expect(monthView).toBeInTheDocument();
-      expect(monthView).toHaveTextContent('테스트 이벤트');
-    });
+    const viewButton = screen.getByLabelText('view');
+    await userEvent.selectOptions(viewButton, 'month');
+    const monthView = screen.getByTestId('month-view');
+    expect(monthView).toBeInTheDocument();
+    expect(monthView).toHaveTextContent('테스트 이벤트');
   });
 
   it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
@@ -389,17 +403,14 @@ describe('일정 뷰', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId('month-view')).toBeInTheDocument();
+      expect(screen.getByText(/2025년 2월/i)).toBeInTheDocument();
     });
 
     const previousButton = screen.getByRole('button', { name: 'Previous' });
-
     await userEvent.click(previousButton);
 
-    await waitFor(() => {
-      const monthView = screen.getByTestId('month-view');
-      expect(within(monthView).getByText('신정')).toBeInTheDocument();
-    });
+    const monthView = screen.getByTestId('month-view');
+    expect(within(monthView).getByText('신정')).toBeInTheDocument();
   });
 });
 
@@ -532,6 +543,12 @@ describe('검색 기능', () => {
 });
 
 describe('일정 충돌', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+    cleanup();
+    vi.clearAllMocks();
+  });
+
   it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
     const mockEvents: Event[] = [
       {
@@ -632,17 +649,14 @@ describe('일정 충돌', () => {
     });
 
     const eventCard = screen.getByTestId('event-item-2');
-    const editButton = within(eventCard).getByRole('button', {
-      name: 'Edit event',
-    });
+    const editButton = within(eventCard).getByLabelText('Edit event');
+
     await userEvent.click(editButton);
 
     const startTimeInput = screen.getByLabelText('시작 시간');
     const endTimeInput = screen.getByLabelText('종료 시간');
 
-    await userEvent.clear(startTimeInput);
     await userEvent.type(startTimeInput, '14:00');
-    await userEvent.clear(endTimeInput);
     await userEvent.type(endTimeInput, '15:00');
 
     const submitButton = screen.getByTestId('event-submit-button');
