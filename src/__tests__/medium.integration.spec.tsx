@@ -12,8 +12,6 @@ import {
   setupMockHandlerUpdating,
 } from '@/__mocks__/handlersUtils.ts';
 import { DialogProvider } from '@/app/provider/DialogProvider.tsx';
-import App from '@/App.tsx';
-import EventNotification from '@/features/notification/ui/EventNotification.tsx';
 import EventManager from '@/pages/event-manager/ui/EventManager.tsx';
 
 const REPEAT_TYPE_MAP = {
